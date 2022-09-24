@@ -1,6 +1,8 @@
 const $dateDisplay = document.querySelector("#currentDay");
 const $schedule = document.querySelector(".container");
 const date = moment();
+const events = [];
+let eventCount = 0;
 let hour = 7;
 
 $dateDisplay.textContent = date.format("dddd, MMMM Do");
@@ -16,6 +18,7 @@ for(let x = 0; x < 14; x++) {
     $timeDisplay.setAttribute("class", "time-block hour col-1");
     $timeDisplay.setAttribute("id", `${hour}`);
     $timeTxtArea.setAttribute("class", "description col-10");
+    $timeTxtArea.setAttribute("id", `${hour}`);
     $timeBtn.setAttribute("type", "submit");
     $timeBtn.setAttribute("value", "Submit");
     $timeBtn.setAttribute("class", "saveBtn col-1");
@@ -58,10 +61,25 @@ function txtAreaColor() {
 
 }
 
+function displayEvents() {
+    
+}
+
 txtAreaColor();
 
 function submitHandler(event) {
     event.preventDefault();
 
-    
+    const $submitTxt = event.target.querySelector('.description');
+    let eventName = $submitTxt.value.trim();
+    let submitNum = $submitTxt.getAttribute('id')
+
+    events[eventCount] = {
+        event: eventName,
+        eventHour: submitNum, 
+    }
+
+    localStorage.setAttribute("eventsArray", JSON.stringify(events));
 }
+
+$schedule.addEventListener('submit', submitHandler);
