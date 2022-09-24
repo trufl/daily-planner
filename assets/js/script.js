@@ -62,10 +62,26 @@ function txtAreaColor() {
 }
 
 function displayEvents() {
-    
+    if(localStorage.getItem("eventsArray") !== null) {
+        const tempArr = JSON.parse(localStorage.getItem("eventsArray"));
+        const txtArr = document.querySelectorAll(".description");
+
+        for(let x = 0; x < tempArr.length; x++) {
+            let hourNum = tempArr[x].eventHour;
+            let eventVal = tempArr[x].event;
+
+            for(let i = 0; i < txtArr.length; i++) {
+                if (hourNum == txtArr[i].getAttribute('id')){
+                    txtArr[i].textContent = eventVal;
+                }
+            }
+        }
+
+    }
 }
 
 txtAreaColor();
+displayEvents();
 
 function submitHandler(event) {
     event.preventDefault();
@@ -79,7 +95,7 @@ function submitHandler(event) {
         eventHour: submitNum, 
     }
 
-    localStorage.setAttribute("eventsArray", JSON.stringify(events));
+    localStorage.setItem("eventsArray", JSON.stringify(events));
 }
 
 $schedule.addEventListener('submit', submitHandler);
