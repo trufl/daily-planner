@@ -1,8 +1,7 @@
 const $dateDisplay = document.querySelector("#currentDay");
 const $schedule = document.querySelector(".container");
 const date = moment();
-const events = [];
-let eventCount = 0;
+let events = [];
 let hour = 7;
 
 $dateDisplay.textContent = date.format("dddd, MMMM Do");
@@ -63,12 +62,13 @@ function txtAreaColor() {
 
 function displayEvents() {
     if(localStorage.getItem("eventsArray") !== null) {
-        const tempArr = JSON.parse(localStorage.getItem("eventsArray"));
+        const tempEventsArr = JSON.parse(localStorage.getItem("eventsArray"));
         const txtArr = document.querySelectorAll(".description");
+        events = JSON.parse(localStorage.getItem("eventsArray"));
 
-        for(let x = 0; x < tempArr.length; x++) {
-            let hourNum = tempArr[x].eventHour;
-            let eventVal = tempArr[x].event;
+        for(let x = 0; x < tempEventsArr.length; x++) {
+            let hourNum = tempEventsArr[x].eventHour;
+            let eventVal = tempEventsArr[x].event;
 
             for(let i = 0; i < txtArr.length; i++) {
                 if (hourNum == txtArr[i].getAttribute('id')){
@@ -80,22 +80,53 @@ function displayEvents() {
     }
 }
 
-txtAreaColor();
-displayEvents();
+function removeItem(hour) {
+    if(localStorage.getItem("eventsArray") !== null) {
+        const tempEventsArr = JSON.parse(localStorage.getItem("eventsArray"));
+
+        for (let i = 0; i < tempEventsArr.length; i++) {
+            if(tempEventsArr[i].eventHour == (hour)){
+                if(i === 0) {
+                    tempEventsArr.splice(i,i+1);
+                    events.splice(i,i+1);
+
+                } else {
+                    tempEventsArr.splice(i,i);
+                    events.splice(i,i);
+                }
+                localStorage.setItem("eventsArray", JSON.stringify(tempEventsArr));
+            }
+        }
+
+    }
+
+}
 
 function submitHandler(event) {
     event.preventDefault();
 
-    const $submitTxt = event.target.querySelector('.description');
-    let eventName = $submitTxt.value.trim();
-    let submitNum = $submitTxt.getAttribute('id')
+    const $submitEvent = event.target.querySelector('.description');
+    let eventName = $submitEvent.value.trim();
+    let submitHour = $submitEvent.getAttribute('id')
 
-    events[eventCount] = {
-        event: eventName,
-        eventHour: submitNum, 
+    if (eventName === "") {
+        $submitEvent.textContent = "";
+        removeItem(submitHour);
+    } else {  
+        for(let i = 0; i < events.length; i++) {
+            if(events[i].eventHour == submitHour) {
+                removeItem(submitHour);
+            }
+        }
+        events.push({
+            event: eventName,
+            eventHour: submitHour,
+        });
+
+        localStorage.setItem("eventsArray", JSON.stringify(events));
     }
-
-    localStorage.setItem("eventsArray", JSON.stringify(events));
 }
 
+txtAreaColor();
+displayEvents();
 $schedule.addEventListener('submit', submitHandler);
